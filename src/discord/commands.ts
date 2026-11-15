@@ -82,7 +82,10 @@ export async function handleCommand(interaction: ChatInputCommandInteraction): P
     await interaction.editReply({ content: message });
   } catch (error: unknown) {
     const message = error instanceof QueueError ? error.message : 'Erro inesperado ao processar a fila.';
-    await interaction.editReply({ content: message });
-    if (!(error instanceof QueueError)) throw error;
+    if (error instanceof QueueError) {
+      await interaction.editReply({ content: message });
+    } else {
+      throw error;
+    }
   }
 }
