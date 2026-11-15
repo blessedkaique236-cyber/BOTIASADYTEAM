@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../infrastructure/database.js';
 
 export interface AuditEntry {
@@ -14,7 +15,7 @@ export class AuditService {
     await prisma.auditLog.create({
       data: {
         ...entry,
-        metadata: entry.metadata as object | undefined,
+        metadata: entry.metadata as Prisma.InputJsonObject | undefined,
       },
     });
   }
