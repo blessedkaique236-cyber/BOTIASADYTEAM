@@ -9,6 +9,10 @@ export const envSchema = z.object({
   DISCORD_CLIENT_ID: z.string({ error: 'DISCORD_CLIENT_ID é obrigatório' }).min(1, 'DISCORD_CLIENT_ID é obrigatório'),
   DISCORD_GUILD_ID: z.string().optional(),
   DATABASE_URL: z.string({ error: 'DATABASE_URL é obrigatório' }).min(1, 'DATABASE_URL é obrigatório'),
+  TICKET_CATEGORY_ID: z.string().optional(),
+  STAFF_ROLE_ID: z.string().optional(),
+  ANNOUNCEMENT_CHANNEL_ID: z.string().optional(),
+  AUDIT_LOG_CHANNEL_ID: z.string().optional(),
 });
 export type Environment = z.infer<typeof envSchema>;
 export function parseEnvironment(source: NodeJS.ProcessEnv): Environment {
