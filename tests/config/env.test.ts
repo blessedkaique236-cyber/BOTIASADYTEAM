@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
+import type { Environment } from '../../src/config/env.js';
 
-let parseEnvironment: typeof import('../../src/config/env.js').parseEnvironment;
+let parseEnvironment: (source: NodeJS.ProcessEnv) => Environment;
 beforeAll(async () => {
   vi.stubEnv('DISCORD_TOKEN', 'test-token');
   vi.stubEnv('DISCORD_CLIENT_ID', '123456789012345678');
