@@ -191,8 +191,10 @@ export async function handleCommand(interaction: ChatInputCommandInteraction): P
       case 'ticket-fechar': {
         const openTicket = await ticketService.findOpenByChannel(guildId, interaction.channelId);
         if (!openTicket) throw new TicketError('Use este comando dentro de um ticket aberto.');
-        if (openTicket.creatorId !== interaction.user.id && !requireAdmin(interaction)) {
-          throw new TicketError('Somente quem abriu o ticket ou um administrador pode fechá-lo.');
+        const member = await interaction.guild.members.fetch(interaction.user.id);
+        const isSupportStaff = Boolean(env.STAFF_ROLE_ID && member.roles.cache.has(env.STAFF_ROLE_ID));
+        if (openTicket.creatorId !== interaction.user.id && !requireAdmin(interaction) && !isSupportStaff) {
+          throw new TicketError('Somente quem abriu o ticket, a equipe de suporte ou um administrador pode fechá-lo.');
         }
         const closed = await ticketService.close(guildId, interaction.channelId, interaction.user.id);
         const channel = await interaction.guild.channels.fetch(interaction.channelId);
