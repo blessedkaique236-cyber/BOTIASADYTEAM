@@ -4,6 +4,7 @@ import {
   SlashCommandBuilder,
   type ChatInputCommandInteraction,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
+  type SlashCommandStringOption,
 } from 'discord.js';
 import { env } from '../config/env.js';
 import { auditService } from '../modules/audit/audit-service.js';
@@ -13,7 +14,7 @@ import { statisticsService } from '../modules/statistics/statistics-service.js';
 import { teamService, TeamError, type TeamView } from '../modules/teams/team-service.js';
 import { ticketService, TicketError } from '../modules/tickets/ticket-service.js';
 
-const queueName = () => (option: import('discord.js').SlashCommandStringOption) =>
+const queueName = () => (option: SlashCommandStringOption) =>
   option.setName('nome').setDescription('Nome da fila').setRequired(true).setMaxLength(40);
 const teamName = () => (option: import('discord.js').SlashCommandStringOption) =>
   option.setName('nome').setDescription('Nome da equipe').setRequired(true).setMaxLength(32);
