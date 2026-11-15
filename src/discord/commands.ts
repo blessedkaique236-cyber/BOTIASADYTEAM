@@ -162,10 +162,12 @@ export async function handleCommand(interaction: ChatInputCommandInteraction): P
       case 'ticket-abrir': {
         const subject = interaction.options.getString('assunto', true);
         const slug = interaction.user.username.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 18) || 'usuario';
+        const botUserId = interaction.client.user?.id;
+        if (!botUserId) throw new TicketError('O bot ainda não está pronto para abrir tickets.');
         const overwrites = [
           { id: interaction.guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] },
           { id: interaction.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] },
-          { id: interaction.client.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.ManageChannels] },
+          { id: botUserId, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.ManageChannels] },
         ];
         if (env.STAFF_ROLE_ID) overwrites.push({ id: env.STAFF_ROLE_ID, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] });
         const channel = await interaction.guild.channels.create({
