@@ -1,4 +1,5 @@
 import { createServer, type Server } from 'node:http';
+import { QueueStatus, TicketStatus } from '@prisma/client';
 import { timingSafeEqual } from 'node:crypto';
 import { env } from '../config/env.js';
 import { logger } from '../core/logger.js';
@@ -83,9 +84,9 @@ export function startHttpServer(isDiscordReady: () => boolean): Server {
         const guildId = env.PANEL_GUILD_ID;
         const [statistics, queues, teams, tickets, audit] = await Promise.all([
           statisticsService.getGuildStatistics(guildId),
-          prisma.queue.findMany({ where: { guildId, status: { not: 'FINISHED' } }, include: { players: true }, orderBy: { createdAt: 'desc' }, take: 30 }),
+          prisma.queue.findMany({ where: { guildId, status: { not: QueueStatus.FINISHED } }, include: { players: true }, orderBy: { createdAt: 'desc' }, take: 30 }),
           prisma.team.findMany({ where: { guildId }, include: { members: true }, orderBy: { createdAt: 'desc' }, take: 30 }),
-          prisma.supportTicket.findMany({ where: { guildId, status: 'OPEN' }, orderBy: { createdAt: 'desc' }, take: 30 }),
+          prisma.supportTicket.findMany({ where: { guildId, status: TicketStatus.OPEN }, orderBy: { createdAt: 'desc' }, take: 30 }),
           prisma.auditLog.findMany({ where: { guildId }, orderBy: { createdAt: 'desc' }, take: 20 }),
         ]);
         response.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
