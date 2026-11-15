@@ -14,8 +14,12 @@ export class AuditService {
   public async record(entry: AuditEntry): Promise<void> {
     await prisma.auditLog.create({
       data: {
-        ...entry,
-        metadata: entry.metadata as Prisma.InputJsonObject | undefined,
+        guildId: entry.guildId,
+        actorId: entry.actorId,
+        action: entry.action,
+        entityType: entry.entityType,
+        entityId: entry.entityId,
+        ...(entry.metadata ? { metadata: entry.metadata as unknown as Prisma.InputJsonObject } : {}),
       },
     });
   }
