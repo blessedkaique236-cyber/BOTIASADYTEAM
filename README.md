@@ -74,4 +74,4 @@ tests/          # Testes automatizados
 
 O projeto será construído módulo por módulo. Um módulo só será considerado concluído após implementação, revisão, compilação e testes correspondentes.
 
-Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para as decisões arquiteturais.
+Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para as decisões arquiteturais e [docs/FOUNDATION.md](docs/FOUNDATION.md) para instruções e limites do Módulo 01. A integração contínua executa typecheck, testes, lint e build em pushes e pull requests para `main`.
