@@ -1,11 +1,33 @@
 services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: boom_queue
+      POSTGRES_USER: boom_queue
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-this-local-password}
+    volumes:
+      - boom_queue_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U boom_queue -d boom_queue"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
   boom-queue-system:
     build:
       context: .
       dockerfile: Dockerfile
     image: boom-queue-system:local
-    container_name: boom-queue-system
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgresql://boom_queue:${POSTGRES_PASSWORD:-change-this-local-password}@database:5432/boom_queue?schema=public
+    depends_on:
+      database:
+        condition: service_healthy
     restart: unless-stopped
     init: true
+
+volumes:
+  boom_queue_data:
