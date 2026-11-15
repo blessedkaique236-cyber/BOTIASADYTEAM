@@ -41,7 +41,13 @@ async function bootstrap(): Promise<void> {
   };
   process.once('SIGINT', () => { void shutdown('SIGINT').finally(() => process.exit(0)); });
   process.once('SIGTERM', () => { void shutdown('SIGTERM').finally(() => process.exit(0)); });
-  await client.login(env.DISCORD_TOKEN);
+  try {
+    await client.login(env.DISCORD_TOKEN);
+  } catch (error) {
+    client.destroy();
+    await new Promise<void>((resolve) => httpServer.close(() => resolve()));
+    throw error;
+  }
 }
 bootstrap().catch(async (error: unknown) => {
   logger.fatal({ err: error }, 'Falha fatal durante inicialização');
