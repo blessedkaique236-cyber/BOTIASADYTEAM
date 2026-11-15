@@ -2,7 +2,7 @@
 
 Sistema profissional, modular e multi-servidor de gerenciamento de filas para Discord.
 
-> **Status:** Em desenvolvimento — Módulo 01/16 (Fundação e Arquitetura).
+> **Status:** Em desenvolvimento — fundação concluída; primeiro MVP de comandos e filas em branch de desenvolvimento. Ainda não é produção.
 
 ## Objetivos
 
@@ -35,6 +35,7 @@ PostgreSQL, Prisma e Redis serão integrados nos módulos de banco de dados e in
 ```bash
 cp .env.example .env
 npm install
+npm run register-commands
 npm run dev
 ```
 
@@ -50,7 +51,7 @@ Preencha as variáveis obrigatórias no arquivo `.env`. Nunca compartilhe tokens
 | `npm run typecheck` | Verificação de tipos |
 | `npm test` | Testes automatizados |
 | `npm run lint` | Análise estática |
-| `npm run format` | Formatação |
+| `npm run format` | Formatação |\n| `npm run register-commands` | Registra comandos slash na aplicação Discord |
 
 ## Estrutura inicial
 
@@ -74,4 +75,4 @@ tests/          # Testes automatizados
 
 O projeto será construído módulo por módulo. Um módulo só será considerado concluído após implementação, revisão, compilação e testes correspondentes.
 
-Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para as decisões arquiteturais e [docs/FOUNDATION.md](docs/FOUNDATION.md) para instruções e limites do Módulo 01. A integração contínua executa typecheck, testes, lint e build em pushes e pull requests para `main`.
+Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para as decisões arquiteturais, [docs/FOUNDATION.md](docs/FOUNDATION.md) para a fundação e [docs/QUEUE-MVP.md](docs/QUEUE-MVP.md) para configurar e testar o primeiro MVP de filas. A integração contínua executa typecheck, testes, lint e build em pushes e pull requests para `main`.
