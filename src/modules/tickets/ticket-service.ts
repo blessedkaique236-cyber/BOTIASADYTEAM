@@ -22,6 +22,10 @@ export class TicketService {
     return ticket;
   }
 
+  public async findOpenByChannel(guildId: string, channelId: string) {
+    return prisma.supportTicket.findFirst({ where: { guildId, channelId, status: TicketStatus.OPEN } });
+  }
+
   public async close(guildId: string, channelId: string, actorId: string) {
     const ticket = await prisma.supportTicket.findFirst({ where: { guildId, channelId, status: TicketStatus.OPEN } });
     if (!ticket) throw new TicketError('Este canal não possui um ticket aberto.');
