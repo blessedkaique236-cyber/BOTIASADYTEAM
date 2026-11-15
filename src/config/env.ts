@@ -13,6 +13,9 @@ export const envSchema = z.object({
   STAFF_ROLE_ID: z.string().optional(),
   ANNOUNCEMENT_CHANNEL_ID: z.string().optional(),
   AUDIT_LOG_CHANNEL_ID: z.string().optional(),
+  PANEL_TOKEN: z.string().optional(),
+  PANEL_GUILD_ID: z.string().optional(),
+  HTTP_PORT: z.coerce.number().int().min(1).max(65535).default(3000),
 });
 export type Environment = z.infer<typeof envSchema>;
 export function parseEnvironment(source: NodeJS.ProcessEnv): Environment {
