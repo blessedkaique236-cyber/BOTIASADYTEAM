@@ -13,7 +13,7 @@ export const envSchema = z.object({
   STAFF_ROLE_ID: z.string().optional(),
   ANNOUNCEMENT_CHANNEL_ID: z.string().optional(),
   AUDIT_LOG_CHANNEL_ID: z.string().optional(),
-  PANEL_TOKEN: z.preprocess((value) => value === '', () => undefined).pipe(z.string().min(32, 'PANEL_TOKEN precisa ter pelo menos 32 caracteres').optional()),
+  PANEL_TOKEN: z.preprocess((value) => value === '' ? undefined : value, z.string().min(32, 'PANEL_TOKEN precisa ter pelo menos 32 caracteres').optional()),
   PANEL_GUILD_ID: z.string().optional(),
   HTTP_PORT: z.coerce.number().int().min(1).max(65535).default(3000),
 });
