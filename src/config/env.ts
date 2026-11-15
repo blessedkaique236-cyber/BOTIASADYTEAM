@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { z } from 'zod';
 
-const envSchema = z.object({
+export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   APP_NAME: z.string().min(1).default('BOOM QUEUE SYSTEM'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
@@ -10,15 +10,24 @@ const envSchema = z.object({
   DISCORD_GUILD_ID: z.string().optional(),
 });
 
-const parsed = envSchema.safeParse(process.env);
+export type Environment = z.infer<typeof envSchema>;
 
-if (!parsed.success) {
-  const details = parsed.error.issues
-    .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-    .join('\n');
+/**
+ * Validates external configuration once, at process startup.
+ * The source parameter makes configuration validation deterministic in tests.
+ */
+export function parseEnvironment(source: NodeJS.ProcessEnv): Environment {
+  const parsed = envSchema.safeParse(source);
 
-  throw new Error(`Configuração de ambiente inválida:\n${details}`);
+  if (!parsed.success) {
+    const details = parsed.error.issues
+      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+      .join('\n');
+
+    throw new Error(`Configuração de ambiente inválida:\n${details}`);
+  }
+
+  return Object.freeze(parsed.data);
 }
 
-export const env = Object.freeze(parsed.data);
-export type Environment = typeof env;
+export const env = parseEnvironment(process.env);
