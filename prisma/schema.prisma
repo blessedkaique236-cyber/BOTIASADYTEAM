@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum QueueStatus {
+  WAITING
+  RUNNING
+  FINISHED
+}
+
+model Queue {
+  id        String       @id @default(cuid())
+  guildId   String
+  name      String
+  nameKey   String
+  ownerId   String
+  status    QueueStatus  @default(WAITING)
+  maxPlayers Int
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  players   QueuePlayer[]
+
+  @@unique([guildId, nameKey])
+  @@index([guildId, status, createdAt])
+}
+
+model QueuePlayer {
+  id        String   @id @default(cuid())
+  queueId   String
+  userId    String
+  username  String
+  joinedAt  DateTime @default(now())
+  queue     Queue    @relation(fields: [queueId], references: [id], onDelete: Cascade)
+
+  @@unique([queueId, userId])
+  @@index([queueId, joinedAt])
+}
