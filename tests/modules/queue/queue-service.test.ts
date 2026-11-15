@@ -6,8 +6,8 @@ describe('QueueService (PostgreSQL integration)', () => {
   const service = new QueueService();
   const guildId = 'integration-guild';
   beforeEach(async () => {
-    await prisma.queuePlayer.deleteMany({ where: { queue: { guildId } } });
-    await prisma.queue.deleteMany({ where: { guildId } });
+    await prisma.queuePlayer.deleteMany({ where: { queue: { guildId: { in: [guildId, 'another-guild', 'other-guild'] } } } });
+    await prisma.queue.deleteMany({ where: { guildId: { in: [guildId, 'another-guild', 'other-guild'] } } });
   });
   afterAll(async () => { await prisma.$disconnect(); });
 
