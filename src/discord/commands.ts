@@ -16,7 +16,7 @@ import { ticketService, TicketError } from '../modules/tickets/ticket-service.js
 
 const queueName = () => (option: SlashCommandStringOption) =>
   option.setName('nome').setDescription('Nome da fila').setRequired(true).setMaxLength(40);
-const teamName = () => (option: import('discord.js').SlashCommandStringOption) =>
+const teamName = () => (option: SlashCommandStringOption) =>
   option.setName('nome').setDescription('Nome da equipe').setRequired(true).setMaxLength(32);
 const admin = PermissionFlagsBits.ManageGuild;
 export const commandDefinitions = [
