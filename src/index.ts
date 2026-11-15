@@ -3,10 +3,12 @@ import { env } from './config/env.js';
 import { logger } from './core/logger.js';
 import { handleCommand } from './discord/commands.js';
 import { connectDatabase, disconnectDatabase } from './infrastructure/database.js';
+import { startHttpServer } from './infrastructure/http-server.js';
 
 async function bootstrap(): Promise<void> {
   await connectDatabase();
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+  const httpServer = startHttpServer(() => client.isReady());
   client.once(Events.ClientReady, (ready) => {
     logger.info({ user: ready.user.tag, guilds: ready.guilds.cache.size }, 'BOOM QUEUE SYSTEM conectado ao Discord');
   });
@@ -32,6 +34,9 @@ async function bootstrap(): Promise<void> {
     shuttingDown = true;
     logger.info({ signal }, 'Encerrando BOOM QUEUE SYSTEM');
     client.destroy();
+    await new Promise<void>((resolve, reject) => {
+      httpServer.close((error) => error ? reject(error) : resolve());
+    });
     await disconnectDatabase();
   };
   process.once('SIGINT', () => { void shutdown('SIGINT').finally(() => process.exit(0)); });
