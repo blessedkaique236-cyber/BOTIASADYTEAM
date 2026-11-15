@@ -1,0 +1,11 @@
+services:
+  boom-queue-system:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: boom-queue-system:local
+    container_name: boom-queue-system
+    env_file:
+      - .env
+    restart: unless-stopped
+    init: true
