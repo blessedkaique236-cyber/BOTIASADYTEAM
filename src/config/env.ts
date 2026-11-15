@@ -8,26 +8,15 @@ export const envSchema = z.object({
   DISCORD_TOKEN: z.string().min(1, 'DISCORD_TOKEN é obrigatório'),
   DISCORD_CLIENT_ID: z.string().min(1, 'DISCORD_CLIENT_ID é obrigatório'),
   DISCORD_GUILD_ID: z.string().optional(),
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL é obrigatório'),
 });
-
 export type Environment = z.infer<typeof envSchema>;
-
-/**
- * Validates external configuration once, at process startup.
- * The source parameter makes configuration validation deterministic in tests.
- */
 export function parseEnvironment(source: NodeJS.ProcessEnv): Environment {
   const parsed = envSchema.safeParse(source);
-
   if (!parsed.success) {
-    const details = parsed.error.issues
-      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-      .join('\n');
-
+    const details = parsed.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join('\n');
     throw new Error(`Configuração de ambiente inválida:\n${details}`);
   }
-
   return Object.freeze(parsed.data);
 }
-
 export const env = parseEnvironment(process.env);
