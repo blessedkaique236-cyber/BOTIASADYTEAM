@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum QueueStatus {
+  WAITING
+  RUNNING
+  FINISHED
+}
+
+model Queue {
+  id        String       @id @default(cuid())
+  guildId   String
+  name      String
+  nameKey   String
+  ownerId   String
+  status    QueueStatus  @default(WAITING)
+  maxPlayers Int
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  players   QueuePlayer[]
+
+  @@unique([guildId, nameKey])
+  @@index([guildId, status, createdAt])
+}
+
+model QueuePlayer {
+  id        String   @id @default(cuid())
+  queueId   String
+  userId    String
+  username  String
+  joinedAt  DateTime @default(now())
+  queue     Queue    @relation(fields: [queueId], references: [id], onDelete: Cascade)
+
+  @@unique([queueId, userId])
+  @@index([queueId, joinedAt])
+}
+
+enum TicketStatus {
+  OPEN
+  CLOSED
+}
+
+model Team {
+  id        String       @id @default(cuid())
+  guildId   String
+  name      String
+  nameKey   String
+  ownerId   String
+  maxMembers Int         @default(5)
+  createdAt DateTime     @default(now())
+  members   TeamMember[]
+
+  @@unique([guildId, nameKey])
+  @@index([guildId, createdAt])
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String
+  userId   String
+  role     String   @default("MEMBER")
+  joinedAt DateTime @default(now())
+  team     Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([userId])
+}
+
+model SupportTicket {
+  id        String       @id @default(cuid())
+  guildId   String
+  channelId String       @unique
+  creatorId String
+  subject   String
+  status    TicketStatus @default(OPEN)
+  createdAt DateTime     @default(now())
+  closedAt  DateTime?
+
+  @@index([guildId, status, createdAt])
+  @@index([creatorId, status])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  guildId    String
+  actorId    String
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([guildId, createdAt])
+  @@index([entityType, entityId])
+}
+
+model MatchRecord {
+  id          String   @id @default(cuid())
+  guildId     String
+  queueName   String
+  participants Json
+  status      String   @default("CREATED")
+  createdAt   DateTime @default(now())
+  completedAt DateTime?
+
+  @@index([guildId, createdAt])
+  @@index([guildId, status])
+}

@@ -5,29 +5,25 @@ export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   APP_NAME: z.string().min(1).default('BOOM QUEUE SYSTEM'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
-  DISCORD_TOKEN: z.string().min(1, 'DISCORD_TOKEN é obrigatório'),
-  DISCORD_CLIENT_ID: z.string().min(1, 'DISCORD_CLIENT_ID é obrigatório'),
+  DISCORD_TOKEN: z.string({ error: 'DISCORD_TOKEN é obrigatório' }).min(1, 'DISCORD_TOKEN é obrigatório'),
+  DISCORD_CLIENT_ID: z.string({ error: 'DISCORD_CLIENT_ID é obrigatório' }).min(1, 'DISCORD_CLIENT_ID é obrigatório'),
   DISCORD_GUILD_ID: z.string().optional(),
+  DATABASE_URL: z.string({ error: 'DATABASE_URL é obrigatório' }).min(1, 'DATABASE_URL é obrigatório'),
+  TICKET_CATEGORY_ID: z.string().optional(),
+  STAFF_ROLE_ID: z.string().optional(),
+  ANNOUNCEMENT_CHANNEL_ID: z.string().optional(),
+  AUDIT_LOG_CHANNEL_ID: z.string().optional(),
+  PANEL_TOKEN: z.preprocess((value) => value === '' ? undefined : value, z.string().min(32, 'PANEL_TOKEN precisa ter pelo menos 32 caracteres').optional()),
+  PANEL_GUILD_ID: z.string().optional(),
+  HTTP_PORT: z.coerce.number().int().min(1).max(65535).default(3000),
 });
-
 export type Environment = z.infer<typeof envSchema>;
-
-/**
- * Validates external configuration once, at process startup.
- * The source parameter makes configuration validation deterministic in tests.
- */
 export function parseEnvironment(source: NodeJS.ProcessEnv): Environment {
   const parsed = envSchema.safeParse(source);
-
   if (!parsed.success) {
-    const details = parsed.error.issues
-      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-      .join('\n');
-
+    const details = parsed.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join('\n');
     throw new Error(`Configuração de ambiente inválida:\n${details}`);
   }
-
   return Object.freeze(parsed.data);
 }
-
 export const env = parseEnvironment(process.env);
