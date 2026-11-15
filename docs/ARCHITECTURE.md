@@ -2,23 +2,26 @@
 
 ## Princípios
 
-1. Modularidade: cada domínio terá limites e responsabilidades explícitos.
-2. Tipagem rigorosa: TypeScript strict e validação de dados em runtime.
-3. Segurança por padrão: segredos fora do código e autorização no backend.
-4. Observabilidade: logs estruturados sem exposição de credenciais.
-5. Testabilidade: dependências isoláveis e testes automatizados.
-6. Multi-tenancy: dados e operações isolados por Discord guild.
+1. Modularidade por domínio e responsabilidades explícitas.
+2. TypeScript strict e validação de configuração em runtime.
+3. Segurança por padrão: segredos externos e autorização no backend.
+4. Observabilidade com logs estruturados e redação de credenciais.
+5. Testabilidade com testes unitários e de integração.
+6. Multi-tenancy: toda consulta de fila exige o ID do servidor Discord.
 
-## Camadas planejadas
+## Arquitetura implementada nesta branch
 
-- **Core:** inicialização, ciclo de vida, registro de módulos e contratos comuns.
-- **Shared:** erros, tipos e utilitários transversais.
-- **Config:** validação e acesso centralizado às configurações.
-- **Modules:** domínios de filas, participantes, permissões, notificações, automações e suporte.
-- **Infrastructure:** banco de dados, cache, gateway e serviços externos.
+- **Gateway Discord:** cliente Discord.js v14, eventos de interação, registro de comandos slash e encerramento gracioso.
+- **Configuração:** Zod valida Discord credentials, ambiente, nível de log e DATABASE_URL.
+- **Domínio de filas:** regras de criação, capacidade, entrada/saída, início, encerramento e listagem.
+- **Persistência:** PostgreSQL via Prisma, migrações versionadas, chaves únicas compostas por guild e fila, cascade para participantes.
+- **Operação:** Docker Compose com volume persistente, healthcheck do banco e migração automática no startup.
+- **Qualidade:** GitHub Actions com PostgreSQL de serviço, migração, typecheck, testes de integração, lint e build.
 
-## Sequência de implementação
+## Próximos domínios
 
-A fundação atual contém configuração, logging, tratamento de erro e bootstrap inicial. O container de dependências, event bus, registry e health checks serão implementados no módulo Core, evitando antecipar responsabilidades.
+O MVP ainda não implementa painel administrativo web, matchmaking e equipes, notificações avançadas, automações, tickets, analytics, auditoria administrativa completa, backups automatizados, métricas/alertas e testes de carga. Esses domínios devem ser entregues em módulos isolados, cada um com migrações, autorização, testes e documentação.
 
-PostgreSQL/Prisma e Redis serão introduzidos nos módulos de banco e infraestrutura, com contratos claros para reduzir acoplamento.
+## Garantias e limites
+
+O schema e os comandos atuais isolam dados por guild. Permissões de gerenciamento são aplicadas no registro dos comandos e verificadas novamente no handler. A persistência depende de um PostgreSQL disponível e de migrações aplicadas. O CI ainda precisa concluir com sucesso no commit candidato antes de qualquer merge. A configuração de token e teste com uma aplicação Discord real dependem do proprietário do bot.
